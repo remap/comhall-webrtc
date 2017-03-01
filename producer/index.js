@@ -119,6 +119,11 @@ function setupSocket(url){
 		updateStatus();
 	});
 
+	socket.on('recstreamstart', function(msg) {
+		trace('request to stream recording received');
+		attachRecording(msg.recUrl);
+	});
+
 	socket.on('recstart', function(msg) {
 		trace('request to start recording received from ' + msg.from);
 		startRecording();
@@ -273,6 +278,16 @@ function toggleVideo(){
 	toggleElement(document.getElementById('local-video'));
 }
 
+function attachRecording(recUrl) {
+	var video = document.getElementById('local-video');
+	video.src = recUrl;
+	video.controls = true;
+}
+
+function detachRecording() {
+
+}
+
 function updateStatus(){
 	if (Object.size(peerConnections) == 0)
 		setStatus('Waiting for incoming connections...');
@@ -318,22 +333,22 @@ function startRecording(){
       }
     mediaRecorder = new MediaRecorder(localStream, options);
 
-    mediaRecorder.onstop = function(e) {
-    	console.log("onstop called. mime type "+mediaRecorder.mimeType);
-    	var recordedBlob = new Blob(recordedChunks);
+    // mediaRecorder.onstop = function(e) {
+    // 	console.log("onstop called. mime type "+mediaRecorder.mimeType);
+    // 	var recordedBlob = new Blob(recordedChunks);
     	
-    	// download video
-    	// var a = document.createElement('a');
-    	// a.download = ['video_', (new Date() + '').slice(4, 28), '.mp4'].join('');
-    	// a.href = URL.createObjectURL(recordedBlob);
-    	// a.textContent = a.download;
-    	// document.getElementById('downloadlink').appendChild(a);
+    // 	// download video
+    // 	// var a = document.createElement('a');
+    // 	// a.download = ['video_', (new Date() + '').slice(4, 28), '.mp4'].join('');
+    // 	// a.href = URL.createObjectURL(recordedBlob);
+    // 	// a.textContent = a.download;
+    // 	// document.getElementById('downloadlink').appendChild(a);
 
-    	socket.emit('recstop', recordings.length)
+    // 	socket.emit('recstop', recordings.length)
 
-    	recordings.push(recordedBlob);
-    	document.getElementById('recorded-video').src = URL.createObjectURL(recordedBlob);
-    }
+    // 	recordings.push(recordedBlob);
+    // 	document.getElementById('recorded-video').src = URL.createObjectURL(recordedBlob);
+    // }
 
     mediaRecorder.ondataavailable = function(e) {
     	console.log("new chunk, "+e.data.size + ' bytes');

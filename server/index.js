@@ -114,6 +114,13 @@ function setConsumerMessageHandlers(socket){
     this.emit('reclist', recordingList);
   });
 
+  socket.on('recreq', function(msg) {
+    console.log("sending request to start playing recording to producer");
+    if(producerSocket) {
+      producerSocket.emit('recstreamstart', {data: {recUrl: msg.recordingURL}});
+    }
+  });
+
   socket.on('recstart', function(msg) {
     console.log("sending request to start recording ("+ msg['recname'] +") from " + consumerIds[socket.id] + ': ' + JSON.stringify(msg));
     if(producerSocket)
