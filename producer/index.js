@@ -121,7 +121,8 @@ function setupSocket(url){
 
 	socket.on('recstreamstart', function(msg) {
 		trace('request to stream recording received');
-		attachRecording(msg.recUrl);
+		trace('rec url: ' + msg.data.recURL);
+		attachRecording(msg.data.recURL);
 	});
 
 	socket.on('recstart', function(msg) {
@@ -278,10 +279,28 @@ function toggleVideo(){
 	toggleElement(document.getElementById('local-video'));
 }
 
-function attachRecording(recUrl) {
-	var video = document.getElementById('local-video');
-	video.src = recUrl;
-	video.controls = true;
+function attachRecording(recURL) {
+	trace("attaching recording to producer view");
+	trace("rec url: " + recURL);
+	var localVideo = document.getElementById('local-video');
+	localVideo.style.display = "none";
+	var recVideo = document.getElementById('recorded-video');
+	recVideo.style.display = "block";
+	// var source = document.createElement('source');
+	// source.src = recURL;
+	// video.appendChild(source);
+	recVideo.controls = true;
+	recVideo.src = recURL;
+	// recVideo.load();
+	var playPromise = recVideo.play();
+
+	if(playPromise !== undefined) {
+		playPromise.then(function() {
+
+		}).catch(function(error) {
+			console.log("Unable to play video - please try again.");
+		});
+	}
 }
 
 function detachRecording() {
@@ -310,6 +329,8 @@ document.onkeypress = function (event){
 		break;
 	}
 }
+
+// document.getElementById('local-video').addEventListener("")
 
 function stopRecording(){
   if (mediaRecorder.state != "recording")

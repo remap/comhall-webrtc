@@ -101,7 +101,7 @@ function setConsumerMessageHandlers(socket){
     var recordingList = [];
 
     console.log('searching records directory '+recordingDir);
-    var files = fs.readdirSync('./'+recordingDir);
+    var files = fs.readdirSync('../'+recordingDir);
     files.forEach(file => {
         if (path.extname(file) == '.mp4')
         {
@@ -117,7 +117,7 @@ function setConsumerMessageHandlers(socket){
   socket.on('recreq', function(msg) {
     console.log("sending request to start playing recording to producer");
     if(producerSocket) {
-      producerSocket.emit('recstreamstart', {data: {recUrl: msg.recordingURL}});
+      producerSocket.emit('recstreamstart', {data: msg});
     }
   });
 
